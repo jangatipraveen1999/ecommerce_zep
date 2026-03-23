@@ -4,10 +4,7 @@ from app.db.database import get_db
 from app.schemas.schemas import UserCreate, UserLogin, Token, UserOut
 from app.models.models import User
 from app.core.security import verify_password, get_password_hash, create_access_token
-<<<<<<< HEAD
 from app.utils.deps import get_current_user
-=======
->>>>>>> 6588b626bef764cafbfd5b90fa052539d0114579
 
 router = APIRouter()
 
@@ -40,12 +37,5 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)):
 
 
 @router.get("/me", response_model=UserOut)
-<<<<<<< HEAD
 def get_me(current_user: User = Depends(get_current_user)):
     return current_user
-=======
-def get_me(db: Session = Depends(get_db), token: str = ""):
-    from app.utils.deps import get_current_user
-    from fastapi import Request
-    return {"message": "Use Authorization header"}
->>>>>>> 6588b626bef764cafbfd5b90fa052539d0114579
