@@ -151,9 +151,9 @@ class TestGetMe:
     def test_get_me_returns_correct_user(self, client, auth_headers, sample_user):
         response = client.get("/api/auth/me", headers=auth_headers)
         data = response.json()
-        assert data["email"] == sample_user.email
-        assert data["name"] == sample_user.name
-        assert data["id"] == sample_user.id
+        assert data["email"] == sample_user["user"]["email"]
+        assert data["name"] == sample_user["user"]["name"]
+        assert data["id"] == sample_user["user"]["id"]
 
     def test_get_me_without_token_fails(self, client):
         response = client.get("/api/auth/me")

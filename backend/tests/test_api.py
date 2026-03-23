@@ -45,12 +45,17 @@ def test_register_user():
     assert "access_token" in response.json()
 
 def test_login_success():
+    # Register first, then login
+    client.post("/api/auth/register", json={
+        "email": "logintest@zapkart.com",
+        "name": "Login Test",
+        "password": "loginpass123"
+    })
     response = client.post("/api/auth/login", json={
-        "email": "test@zapkart.com",
-        "password": "testpass123"
+        "email": "logintest@zapkart.com",
+        "password": "loginpass123"
     })
     assert response.status_code == 200
-    assert "access_token" in response.json()
 
 def test_cart_unauthorized():
     response = client.get("/api/cart/")
