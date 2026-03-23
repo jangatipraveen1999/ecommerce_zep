@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: zapkart_pass
       POSTGRES_DB: zapkart_db
     ports:
-      - "5432:5432"
+      - "5433:5433"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -28,7 +28,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: postgresql://zapkart_user:zapkart_pass@db:5432/zapkart_db
+      DATABASE_URL: postgresql://zapkart_user:zapkart_pass@db:5433/zapkart_db
       SECRET_KEY: your-super-secret-key-change-in-production
       DEBUG: "true"
     depends_on:
