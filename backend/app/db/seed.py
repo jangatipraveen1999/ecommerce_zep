@@ -50,6 +50,12 @@ def seed_database():
         {"name": "Coca-Cola", "price": 40.0, "original_price": 45.0, "unit": "750ml", "category_id": categories[3].id, "image_url": "https://images.unsplash.com/photo-1561758033-d89a9ad46330?w=300", "discount": 11, "in_stock": True, "delivery_time": 10},
         {"name": "Tropicana Orange Juice", "price": 85.0, "original_price": 99.0, "unit": "1L", "category_id": categories[3].id, "image_url": "https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=300", "discount": 14, "in_stock": True, "delivery_time": 10},
         {"name": "Red Bull Energy Drink", "price": 115.0, "original_price": 125.0, "unit": "250ml", "category_id": categories[3].id, "image_url": "https://images.unsplash.com/photo-1550505095-381b-4b01-a20a-1949f80ecae3?w=300", "discount": 8, "in_stock": True, "delivery_time": 10},
+<<<<<<< HEAD
+=======
+        {"name": "Minute Maid Pulpy Orange", "price": 30.0, "original_price": 35.0, "unit": "400ml", "category_id": categories[3].id, "image_url": "https://images.unsplash.com/photo-1534353436294-0dbd4bdac845?w=300", "discount": 14, "in_stock": True, "delivery_time": 10},
+        {"name": "Starbucks Cold Coffee", "price": 180.0, "original_price": 200.0, "unit": "250ml", "category_id": categories[3].id, "image_url": "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=300", "discount": 10, "in_stock": True, "delivery_time": 10},
+
+>>>>>>> 6588b626bef764cafbfd5b90fa052539d0114579
     ]
 
     for prod_data in products_data:
