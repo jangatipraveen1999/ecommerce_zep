@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
-    DATABASE_URL: str = "sqlite:///./zapkart.db"
+    DATABASE_URL: str = "postgresql://zapkart_user:zapkart_pass@localhost:5433/zapkart_db"
 
     ALLOWED_ORIGINS: List[str] = [
         "http://localhost:3000",

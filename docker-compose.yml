@@ -1,23 +1,70 @@
-version: '3.9'
-
 services:
+  # ─────────────────────────────────────────
+  # PostgreSQL Database
+  # ─────────────────────────────────────────
+  db:
+    image: postgres:15-alpine
+    container_name: zapkart_postgres
+    environment:
+      POSTGRES_USER: zapkart_user
+      POSTGRES_PASSWORD: zapkart_pass
+      POSTGRES_DB: zapkart_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zapkart_user -d zapkart_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────
+  # FastAPI Backend
+  # ─────────────────────────────────────────
   backend:
     build: ./backend
+    container_name: zapkart_backend
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=sqlite:///./zapkart.db
-      - SECRET_KEY=your-secret-key-change-in-production
-      - DEBUG=true
+      DATABASE_URL: postgresql://zapkart_user:zapkart_pass@db:5432/zapkart_db
+      SECRET_KEY: your-super-secret-key-change-in-production
+      DEBUG: "true"
+    depends_on:
+      db:
+        condition: service_healthy
     volumes:
       - ./backend:/app
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    command: >
+      sh -c "alembic upgrade head &&
+             python -m app.db.seed &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
 
+  # ─────────────────────────────────────────
+  # React Frontend
+  # ─────────────────────────────────────────
   frontend:
     build: ./frontend
+    container_name: zapkart_frontend
     ports:
       - "3000:3000"
     depends_on:
       - backend
+
+  # ─────────────────────────────────────────
+  # pgAdmin (Database GUI)
+  # ─────────────────────────────────────────
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: zapkart_pgadmin
     environment:
-      - VITE_API_URL=http://localhost:8000
+      PGADMIN_DEFAULT_EMAIL: admin@zapkart.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:

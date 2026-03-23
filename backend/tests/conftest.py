@@ -7,8 +7,13 @@ from app.db.database import Base, get_db
 from app.models.models import Category, Product, User
 from app.core.security import get_password_hash, create_access_token
 
+# Use SQLite for tests (fast, no PostgreSQL needed for CI)
 TEST_DATABASE_URL = "sqlite:///./test.db"
-engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
+
+engine = create_engine(
+    TEST_DATABASE_URL,
+    connect_args={"check_same_thread": False}
+)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
@@ -70,7 +75,7 @@ def seed_products(seed_categories):
     db = TestingSessionLocal()
     cats = seed_categories
     products = [
-        Product(name="Fresh Tomatoes",      price=25.0, original_price=35.0, unit="500g",  category_id=cats[0].id, discount=28, in_stock=True,  delivery_time=10, rating=4.5, review_count=10, image_url="https://example.com/tomato.jpg"),
+        Product(name="Fresh Tomatoes",       price=25.0, original_price=35.0, unit="500g",  category_id=cats[0].id, discount=28, in_stock=True,  delivery_time=10, rating=4.5, review_count=10, image_url="https://example.com/tomato.jpg"),
         Product(name="Amul Full Cream Milk", price=30.0, original_price=32.0, unit="500ml", category_id=cats[1].id, discount=6,  in_stock=True,  delivery_time=10, rating=4.0, review_count=5,  image_url="https://example.com/milk.jpg"),
         Product(name="Lay's Classic Salted", price=20.0, original_price=25.0, unit="73g",   category_id=cats[2].id, discount=20, in_stock=True,  delivery_time=10, rating=4.2, review_count=8,  image_url="https://example.com/lays.jpg"),
         Product(name="Coca-Cola",            price=40.0, original_price=45.0, unit="750ml", category_id=cats[3].id, discount=11, in_stock=True,  delivery_time=10, rating=4.3, review_count=15, image_url="https://example.com/coke.jpg"),
@@ -142,22 +147,15 @@ def placed_order(client, auth_headers, cart_with_item):
     return response.json()
 
 
-# ─────────────────────────────────────────
-# Aliases for new test files
-# ─────────────────────────────────────────
+# Aliases
 @pytest.fixture
 def sample_user(registered_user):
-    """Returns dict with user info + access_token."""
     return registered_user
-
 
 @pytest.fixture
 def sample_category(seed_categories):
-    """Return first category."""
     return seed_categories[0]
-
 
 @pytest.fixture
 def sample_product(seed_products):
-    """Return first product."""
     return seed_products[0]
