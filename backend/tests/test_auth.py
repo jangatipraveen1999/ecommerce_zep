@@ -1,10 +1,6 @@
 """
 Tests for Authentication endpoints
-- POST /api/auth/register
-- POST /api/auth/login
-- GET  /api/auth/me
 """
-import pytest
 
 
 class TestRegister:
@@ -24,9 +20,7 @@ class TestRegister:
             "name": "Token User",
             "password": "tokenpass123"
         })
-        data = response.json()
-        assert "access_token" in data
-        assert len(data["access_token"]) > 0
+        assert "access_token" in response.json()
 
     def test_register_returns_token_type_bearer(self, client):
         response = client.post("/api/auth/register", json={
@@ -46,13 +40,18 @@ class TestRegister:
         assert user["email"] == "userdata@zapkart.com"
         assert user["name"] == "Data User"
         assert "id" in user
-        assert "hashed_password" not in user  # password not exposed
+        assert "hashed_password" not in user
 
-    def test_register_duplicate_email_fails(self, client, sample_user):
+    def test_register_duplicate_email_fails(self, client):
+        client.post("/api/auth/register", json={
+            "email": "duplicate@zapkart.com",
+            "name": "User One",
+            "password": "pass123"
+        })
         response = client.post("/api/auth/register", json={
-            "email": "test@zapkart.com",  # same as sample_user
-            "name": "Duplicate User",
-            "password": "duppass123"
+            "email": "duplicate@zapkart.com",
+            "name": "User Two",
+            "password": "pass456"
         })
         assert response.status_code == 400
         assert "already registered" in response.json()["detail"]
@@ -80,7 +79,6 @@ class TestRegister:
         assert response.status_code == 422
 
     def test_register_without_optional_fields(self, client):
-        """Phone and address are optional."""
         response = client.post("/api/auth/register", json={
             "email": "minimal@zapkart.com",
             "name": "Minimal User",
@@ -94,23 +92,38 @@ class TestRegister:
 
 
 class TestLogin:
-    def test_login_success(self, client, sample_user):
+    def test_login_success(self, client):
+        client.post("/api/auth/register", json={
+            "email": "logintest@zapkart.com",
+            "name": "Login User",
+            "password": "loginpass123"
+        })
         response = client.post("/api/auth/login", json={
-            "email": "test@zapkart.com",
-            "password": "testpass123"
+            "email": "logintest@zapkart.com",
+            "password": "loginpass123"
         })
         assert response.status_code == 200
 
-    def test_login_returns_access_token(self, client, sample_user):
+    def test_login_returns_access_token(self, client):
+        client.post("/api/auth/register", json={
+            "email": "tokentest@zapkart.com",
+            "name": "Token User",
+            "password": "tokenpass123"
+        })
         response = client.post("/api/auth/login", json={
-            "email": "test@zapkart.com",
-            "password": "testpass123"
+            "email": "tokentest@zapkart.com",
+            "password": "tokenpass123"
         })
         assert "access_token" in response.json()
 
-    def test_login_wrong_password_fails(self, client, sample_user):
+    def test_login_wrong_password_fails(self, client):
+        client.post("/api/auth/register", json={
+            "email": "wrongpw@zapkart.com",
+            "name": "Wrong PW User",
+            "password": "correctpass123"
+        })
         response = client.post("/api/auth/login", json={
-            "email": "test@zapkart.com",
+            "email": "wrongpw@zapkart.com",
             "password": "wrongpassword"
         })
         assert response.status_code == 401
@@ -133,18 +146,23 @@ class TestLogin:
         response = client.post("/api/auth/login", json={})
         assert response.status_code == 422
 
-    def test_login_returns_user_info(self, client, sample_user):
+    def test_login_returns_user_info(self, client):
+        client.post("/api/auth/register", json={
+            "email": "infotest@zapkart.com",
+            "name": "Info User",
+            "password": "infopass123"
+        })
         response = client.post("/api/auth/login", json={
-            "email": "test@zapkart.com",
-            "password": "testpass123"
+            "email": "infotest@zapkart.com",
+            "password": "infopass123"
         })
         user = response.json()["user"]
-        assert user["email"] == "test@zapkart.com"
-        assert user["name"] == "Test User"
+        assert user["email"] == "infotest@zapkart.com"
+        assert user["name"] == "Info User"
 
 
 class TestGetMe:
-    def test_get_me_success(self, client, auth_headers, sample_user):
+    def test_get_me_success(self, client, auth_headers):
         response = client.get("/api/auth/me", headers=auth_headers)
         assert response.status_code == 200
 
